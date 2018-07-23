@@ -1,6 +1,6 @@
-package me.ericfu.atchannel.dao;
+package me.ericfu.album.dao;
 
-import me.ericfu.atchannel.model.Album;
+import me.ericfu.album.model.Album;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 

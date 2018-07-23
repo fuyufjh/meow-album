@@ -1,4 +1,4 @@
-package me.ericfu.atchannel;
+package me.ericfu.album;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

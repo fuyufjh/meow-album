@@ -1,4 +1,4 @@
-package me.ericfu.atchannel.exception;
+package me.ericfu.album.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

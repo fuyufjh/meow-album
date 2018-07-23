@@ -1,8 +1,8 @@
-package me.ericfu.atchannel.service;
+package me.ericfu.album.service;
 
-import me.ericfu.atchannel.model.Album;
-import me.ericfu.atchannel.model.Photo;
-import me.ericfu.atchannel.model.User;
+import me.ericfu.album.model.Album;
+import me.ericfu.album.model.Photo;
+import me.ericfu.album.model.User;
 
 import java.util.List;
 

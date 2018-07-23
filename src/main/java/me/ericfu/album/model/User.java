@@ -1,4 +1,4 @@
-package me.ericfu.atchannel.model;
+package me.ericfu.album.model;
 
 import java.io.Serializable;
 

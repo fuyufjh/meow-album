@@ -1,11 +1,11 @@
-package me.ericfu.atchannel.service.impl;
+package me.ericfu.album.service.impl;
 
-import me.ericfu.atchannel.dao.AlbumDao;
-import me.ericfu.atchannel.dao.PhotoDao;
-import me.ericfu.atchannel.model.Album;
-import me.ericfu.atchannel.model.Photo;
-import me.ericfu.atchannel.model.User;
-import me.ericfu.atchannel.service.AlbumService;
+import me.ericfu.album.dao.AlbumDao;
+import me.ericfu.album.dao.PhotoDao;
+import me.ericfu.album.model.Album;
+import me.ericfu.album.model.Photo;
+import me.ericfu.album.model.User;
+import me.ericfu.album.service.AlbumService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
