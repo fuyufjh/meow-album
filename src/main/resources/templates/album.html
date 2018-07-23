@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title th:text="'MiaoWu - ' + ${album.title}"></title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <link rel="stylesheet" th:href="@{/css/default.css}">
+</head>
+<body>
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/">MiaoWu</a></li>
+          <li class="breadcrumb-item">Album</li>
+          <li class="breadcrumb-item active" aria-current="page" th:text="${album.title}"></li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <form method="post">
+        <div class="card mb-3">
+          <div class="card-header">
+            <input title="author" name="author" class="form-control" type="text" placeholder="Your Name">
+          </div>
+          <div class="card-body">
+            <textarea title="content" placeholder="Say something..." name="content" class="form-control mb-3" rows="3"></textarea>
+            <button type="submit" class="btn btn-primary">Post it!</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="row">
+    <th:block th:each="photo: ${photos}">
+      <div class="col col-12 col-lg-6">
+        <div class="card mb-3">
+          <img class="card-img-top" th:src="${photo.previewUrl}" th:alt="'Preview of ' + ${photo.title}">
+          <div class="card-header">
+            <th:block th:if="${photo.title}">
+              <span class="float-left" th:text="${photo.title}"></span>
+            </th:block>
+            <th:block th:if="${photo.photoTime}">
+              <span class="float-right text-muted" th:text="${#dates.format(photo.photoTime, 'yyyy-MM-dd HH:mm:ss')}"></span>
+            </th:block>
+          </div>
+          <th:block th:if="${photo.text}">
+            <div class="card-body">
+              <p class="card-text" th:text="${photo.text}"></p>
+            </div>
+          </th:block>
+        </div>
+      </div>
+    </th:block>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</body>
+</html>
