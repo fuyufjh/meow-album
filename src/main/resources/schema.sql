@@ -1,7 +1,7 @@
 CREATE TABLE `user` (
   id INT AUTO_INCREMENT NOT NULL,
   username VARCHAR(64) NOT NULL,
-  password CHAR(32) CHARACTER SET ascii NOT NULL,
+  password CHAR(64) CHARACTER SET ascii NOT NULL,
   PRIMARY KEY (id),
   UNIQUE KEY (username)
 ) ENGINE='InnoDB' DEFAULT CHARSET='utf8mb4';
@@ -20,9 +20,15 @@ CREATE TABLE `photo` (
   album_id INT NOT NULL,
   title VARCHAR(64) NULL,
   text TEXT NULL,
-  preview_url VARCHAR(2000) NULL,
-  raw_url VARCHAR(2000) NOT NULL,
+  preview_url VARCHAR(2048) NULL,
+  raw_url VARCHAR(2048) NOT NULL,
   photo_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   INDEX (album_id)
+) ENGINE='InnoDB' DEFAULT CHARSET='utf8mb4';
+
+CREATE TABLE `config` (
+  `key` VARCHAR(256) NOT NULL,
+  `value` VARCHAR(4096) NOT NULL,
+  PRIMARY KEY (`key`)
 ) ENGINE='InnoDB' DEFAULT CHARSET='utf8mb4';

@@ -1,5 +1,5 @@
 -- table: user --
-INSERT INTO user (id, username, password) VALUES (1, 'fuyufjh', MD5('123456'));
+INSERT INTO user (id, username, password) VALUES (1, 'fuyufjh', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92');
 
 -- table: album --
 INSERT INTO album (id, owner_id, title, alias) VALUES (1, 1, '测试', 'test');

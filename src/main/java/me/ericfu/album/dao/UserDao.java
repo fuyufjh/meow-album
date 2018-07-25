@@ -12,5 +12,8 @@ public interface UserDao {
     User getUserLogin(@Param("username") String username, @Param("password") String password);
 
     @Select("SELECT * FROM user WHERE id = ${userId}")
-    User getUserById(int userId);
+    User getUserById(@Param("userId") int userId);
+
+    @Select("SELECT * FROM user WHERE username = #{username}")
+    User getUserByName(@Param("username") String username);
 }
