@@ -4,5 +4,11 @@ import me.ericfu.album.model.User;
 
 public interface UserService {
 
-    public User getUserByUsername(String username);
+    User getUserByUsername(String username);
+
+    User checkCredential(String credential);
+
+    User checkUsernamePassword(String username, String password);
+
+    String buildCredential(User user);
 }

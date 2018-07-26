@@ -1,5 +1,6 @@
 package me.ericfu.album.controller;
 
+import me.ericfu.album.exception.AuthFailedException;
 import me.ericfu.album.exception.ResourceNotFoundException;
 import me.ericfu.album.model.Album;
 import me.ericfu.album.model.Photo;
@@ -8,8 +9,12 @@ import me.ericfu.album.service.AlbumService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
+import javax.annotation.CheckForSigned;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @Controller
@@ -17,31 +22,30 @@ public class AlbumController {
 
     private final AlbumService albumService;
 
-    private final User mockUser;
-    {
-        mockUser = new User();
-        mockUser.setId(1);
-        mockUser.setUsername("fuyufjh");
-        mockUser.setPassword("e10adc3949ba59abbe56e057f20f883e"); // plain text is "123456"
-    }
-
     @Autowired
     public AlbumController(AlbumService albumService) {
         this.albumService = albumService;
     }
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public String homepage(ModelMap modelMap) {
-        List<Album> albums = albumService.getUserAlbums(mockUser);
+    @CheckForSigned
+    public String homepage(ModelMap modelMap, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        List<Album> albums = albumService.getUserAlbums(user);
         modelMap.addAttribute("albums", albums);
         return "index";
     }
 
     @RequestMapping(value = "/album/{alias}", method = RequestMethod.GET)
-    public String findCommentsByPostAddress(@PathVariable("alias") String alias, ModelMap modelMap) {
+    @CheckForSigned
+    public String showAlbumByAlias(@PathVariable("alias") String alias, HttpSession session, ModelMap modelMap) {
+        User user = (User) session.getAttribute("user");
         Album album = albumService.getAlbumByAlias(alias);
         if (album == null) {
             throw new ResourceNotFoundException("requested album not found");
+        }
+        if (album.getOwnerId() != user.getId()) {
+            throw new AuthFailedException("no permission to this album");
         }
         List<Photo> photos = albumService.getAlbumPhotos(album);
         modelMap.addAttribute("album", album);
