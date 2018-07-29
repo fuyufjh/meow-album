@@ -16,6 +16,6 @@ public interface PhotoDao {
     @Select("SELECT * FROM photo WHERE album_id = #{albumId} ORDER BY id DESC")
     List<Photo> findPhotosByAlbumId(int albumId);
 
-    @Insert("INSERT INTO photo (album_id, title, text, preview_url, raw_url, photo_time, public) VALUES (#{albumId}, #{title}, #{text}, #{previewUrl}, #{rawUrl}, #{photoTime}, #{public})")
+    @Insert("INSERT INTO photo (album_id, title, text, preview_url, raw_url, photo_time) VALUES (#{albumId}, #{title}, #{text}, #{previewUrl}, #{rawUrl}, #{photoTime})")
     void addPhoto(Photo photo);
 }

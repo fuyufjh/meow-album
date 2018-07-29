@@ -11,14 +11,23 @@
 <div class="container mt-3">
   <div class="row">
     <div class="col">
-      <form method="post">
+      <form method="post" enctype="multipart/form-data">
         <div class="card mb-3">
           <div class="card-header">
-            <input title="author" name="author" class="form-control" type="text" placeholder="Your Name">
+            <input title="title" name="title" class="form-control" type="text" placeholder="Title">
           </div>
           <div class="card-body">
-            <textarea title="content" placeholder="Say something..." name="content" class="form-control mb-3" rows="3"></textarea>
-            <button type="submit" class="btn btn-primary">Post it!</button>
+            <textarea title="text" placeholder="Description" name="text" class="form-control mb-3" rows="3"></textarea>
+            <div class="input-group">
+              <div class="custom-file">
+                <input type="file" class="custom-file-input" id="file-chooser" name="file">
+                <label class="custom-file-label" for="file-chooser">Choose file...</label>
+              </div>
+              <div class="input-group-append">
+                <!--<button class="btn btn-outline-secondary" type="button" id="inputGroupFileAddon04">Button</button>-->
+                <button class="btn btn-primary" type="submit">Upload</button>
+              </div>
+            </div>
           </div>
         </div>
       </form>
@@ -51,5 +60,13 @@
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script>
+    $('#file-chooser').on('change',function(){
+        //get the file name
+        var fileName = $(this).val();
+        //replace the "Choose a file" label
+        $(this).next('.custom-file-label').html(fileName);
+    })
+</script>
 </body>
 </html>

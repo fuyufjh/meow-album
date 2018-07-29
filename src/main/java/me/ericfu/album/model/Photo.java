@@ -8,7 +8,7 @@ public class Photo implements Serializable {
     private static final long serialVersionUID = -8553034150470792610L;
 
     private int id;
-    private int ownerId;
+    private int albumId;
     private String title;
     private String text;
     private String previewUrl;
@@ -23,12 +23,12 @@ public class Photo implements Serializable {
         this.id = id;
     }
 
-    public int getOwnerId() {
-        return ownerId;
+    public int getAlbumId() {
+        return albumId;
     }
 
-    public void setOwnerId(int ownerId) {
-        this.ownerId = ownerId;
+    public void setAlbumId(int albumId) {
+        this.albumId = albumId;
     }
 
     public String getTitle() {
@@ -75,7 +75,7 @@ public class Photo implements Serializable {
     public String toString() {
         return "Photo{" +
                 "id=" + id +
-                ", ownerId=" + ownerId +
+                ", albumId=" + albumId +
                 ", title='" + title + '\'' +
                 ", text='" + text + '\'' +
                 ", previewUrl='" + previewUrl + '\'' +
