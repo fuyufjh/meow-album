@@ -9,7 +9,9 @@ import me.ericfu.album.model.User;
 import me.ericfu.album.service.AlbumService;
 import me.ericfu.album.service.StorageService;
 import me.ericfu.album.util.PhotoUtils;
+import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -20,6 +22,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -106,10 +110,14 @@ public class AlbumController {
     @ResponseBody
     public ResponseEntity<Resource> getPhoto(@PathVariable("filename") String filename,
                            HttpSession session,
-                           ModelMap modelMap) {
+                           ModelMap modelMap) throws IOException {
+        // FIXME: thumbnail should be generated when uploading, just hacking
         Resource file = storageService.loadAsResource(filename);
+        ByteArrayOutputStream thumbnailStream = new ByteArrayOutputStream();
+        Thumbnails.of(file.getURL()).size(1024, 1024).toOutputStream(thumbnailStream);
+        ByteArrayResource resource = new ByteArrayResource(thumbnailStream.toByteArray());
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.IMAGE_JPEG_VALUE)
-                .body(file);
+                .body(resource);
     }
 }
