@@ -11,6 +11,7 @@ CREATE TABLE `album` (
   owner_id INT NOT NULL,
   title VARCHAR(256) NOT NULL,
   alias VARCHAR(64) NOT NULL,
+  public BOOLEAN NOT NULL,
   PRIMARY KEY (id),
   UNIQUE KEY (alias)
 ) ENGINE='InnoDB' DEFAULT CHARSET='utf8mb4';

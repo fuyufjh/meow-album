@@ -9,6 +9,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -18,9 +19,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 @Aspect
+@Order(0)
 @Component
-public class CheckForSignedAspect {
-    private static Logger logger = LoggerFactory.getLogger(CheckForSignedAspect.class);
+public class CheckSignedAspect {
+    private static Logger logger = LoggerFactory.getLogger(CheckSignedAspect.class);
 
     private UserService userService;
 
@@ -29,15 +31,11 @@ public class CheckForSignedAspect {
         this.userService = userService;
     }
 
-    @Pointcut("@annotation(javax.annotation.CheckForSigned)")
-    public void isAnnotated() {
-    }
-
-    @Pointcut("execution(public * me.ericfu.album..*(..))")
+    @Pointcut("execution(public * me.ericfu.album.controller..*(..))")
     public void atExecution() {
     }
 
-    @Before("isAnnotated() && atExecution()")
+    @Before("atExecution()")
     public void doBefore() throws AuthFailedException {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
@@ -51,12 +49,9 @@ public class CheckForSignedAspect {
                     break;
                 }
             }
-            if (credential == null) {
-                throw new AuthFailedException("not signed in");
-            } else {
+            if (credential != null) {
                 user = userService.checkCredential(credential);
                 session.setAttribute("user", user);
-
                 logger.info("User {} (id = {}) signed in with credential cookie", user.getUsername(), user.getId());
             }
         }

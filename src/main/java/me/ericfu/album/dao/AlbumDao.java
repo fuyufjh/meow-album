@@ -14,4 +14,7 @@ public interface AlbumDao {
 
     @Select("SELECT * FROM album WHERE owner_id = #{ownerId} ORDER BY id DESC")
     List<Album> findAlbumsByOwnerId(int ownerId);
+
+    @Select("SELECT * FROM album WHERE public = TRUE")
+    List<Album> getAllPublicAlbums();
 }

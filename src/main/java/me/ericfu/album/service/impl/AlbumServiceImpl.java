@@ -41,4 +41,9 @@ public class AlbumServiceImpl implements AlbumService {
     public void addPhoto(Photo photo) {
         photoDao.addPhoto(photo);
     }
+
+    @Override
+    public List<Album> getAllPublicAlbums() {
+        return albumDao.getAllPublicAlbums();
+    }
 }

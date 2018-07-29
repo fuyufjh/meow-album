@@ -1,5 +1,6 @@
 package me.ericfu.album.controller;
 
+import me.ericfu.album.aspect.MustSigned;
 import me.ericfu.album.exception.AuthFailedException;
 import me.ericfu.album.exception.ResourceNotFoundException;
 import me.ericfu.album.model.Album;
@@ -17,9 +18,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.CheckForSigned;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -36,25 +35,33 @@ public class AlbumController {
         this.storageService = storageService;
     }
 
-    @RequestMapping(value = "/", method = RequestMethod.GET)
-    @CheckForSigned
-    public String homepage(ModelMap modelMap, HttpSession session) {
+    @GetMapping("/")
+    public String homepage(ModelMap modelMap) {
+        List<Album> albums = albumService.getAllPublicAlbums();
+        modelMap.addAttribute("albums", albums);
+        return "home";
+    }
+
+    @GetMapping("/my")
+    @MustSigned
+    public String myAlbums(ModelMap modelMap, HttpSession session) {
         User user = (User) session.getAttribute("user");
         List<Album> albums = albumService.getUserAlbums(user);
         modelMap.addAttribute("albums", albums);
-        return "index";
+        return "my_albums";
     }
 
-    @RequestMapping(value = "/album/{alias}", method = RequestMethod.GET)
-    @CheckForSigned
+    @GetMapping("/album/{alias}")
     public String showAlbumByAlias(@PathVariable("alias") String alias, HttpSession session, ModelMap modelMap) {
-        User user = (User) session.getAttribute("user");
         Album album = albumService.getAlbumByAlias(alias);
         if (album == null) {
             throw new ResourceNotFoundException("requested album not found");
         }
-        if (album.getOwnerId() != user.getId()) {
-            throw new AuthFailedException("no permission to this album");
+        if (!album.isPublic()) {
+            User user = (User) session.getAttribute("user");
+            if (user == null || album.getOwnerId() != user.getId()) {
+                throw new AuthFailedException("no permission to this album");
+            }
         }
         List<Photo> photos = albumService.getAlbumPhotos(album);
         modelMap.addAttribute("album", album);
@@ -63,13 +70,12 @@ public class AlbumController {
     }
 
     @PostMapping("/album/{alias}")
-    @CheckForSigned
+    @MustSigned
     public String uploadPhoto(@PathVariable("alias") String alias,
                               @RequestParam("title") String title,
                               @RequestParam("text") String text,
                               @RequestParam("file") MultipartFile file,
-                              HttpSession session,
-                              ModelMap modelMap) {
+                              HttpSession session) {
         User user = (User) session.getAttribute("user");
         Album album = albumService.getAlbumByAlias(alias);
         if (album == null) {
@@ -97,7 +103,6 @@ public class AlbumController {
     }
 
     @GetMapping("/files/{filename}")
-    @CheckForSigned
     @ResponseBody
     public ResponseEntity<Resource> getPhoto(@PathVariable("filename") String filename,
                            HttpSession session,

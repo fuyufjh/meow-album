@@ -15,4 +15,6 @@ public interface AlbumService {
     List<Photo> getAlbumPhotos(Album album);
 
     void addPhoto(Photo photo);
+
+    List<Album> getAllPublicAlbums();
 }

@@ -10,6 +10,7 @@ public class Album implements Serializable {
     private int ownerId;
     private String title;
     private String alias;
+    private boolean public_;
 
     public int getId() {
         return id;
@@ -43,6 +44,14 @@ public class Album implements Serializable {
         this.alias = alias;
     }
 
+    public boolean isPublic() {
+        return public_;
+    }
+
+    public void setPublic(boolean public_) {
+        this.public_ = public_;
+    }
+
     @Override
     public String toString() {
         return "Album{" +
@@ -50,6 +59,7 @@ public class Album implements Serializable {
                 ", ownerId=" + ownerId +
                 ", title='" + title + '\'' +
                 ", alias='" + alias + '\'' +
+                ", public_=" + public_ +
                 '}';
     }
 }

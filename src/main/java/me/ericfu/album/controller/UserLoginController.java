@@ -30,7 +30,7 @@ public class UserLoginController {
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public String loginPage(HttpSession session) {
         if (session.getAttribute("user") != null) {
-            return "redirect:/";
+            return "redirect:/my";
         }
         return "login";
     }
@@ -59,7 +59,7 @@ public class UserLoginController {
         session.setAttribute("user", user);
 
         logger.info("User {} (id = {}) signed in successfully", user.getUsername(), user.getId());
-        return "redirect:/";
+        return "redirect:/my";
     }
 
 }
