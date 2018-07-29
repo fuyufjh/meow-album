@@ -8,6 +8,7 @@ import me.ericfu.album.model.Photo;
 import me.ericfu.album.model.User;
 import me.ericfu.album.service.AlbumService;
 import me.ericfu.album.service.StorageService;
+import me.ericfu.album.util.PhotoUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -19,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -92,7 +92,7 @@ public class AlbumController {
         photo.setAlbumId(album.getId());
         photo.setTitle(title);
         photo.setText(text);
-        photo.setPhotoTime(new Date()); // FIXME
+        photo.setPhotoTime(PhotoUtils.extractDate(file));
 
         String photoUrl = "/files/" + filename;
         photo.setRawUrl(photoUrl);
