@@ -51,8 +51,10 @@ public class CheckSignedAspect {
             }
             if (credential != null) {
                 user = userService.checkCredential(credential);
-                session.setAttribute("user", user);
-                logger.info("User {} (id = {}) signed in with credential cookie", user.getUsername(), user.getId());
+                if (user != null) {
+                    session.setAttribute("user", user);
+                    logger.info("User {} (id = {}) signed in with credential cookie", user.getUsername(), user.getId());
+                }
             }
         }
         request.setAttribute("user", user);
