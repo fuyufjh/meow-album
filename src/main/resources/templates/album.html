@@ -46,7 +46,7 @@
               <span class="float-right text-muted" th:text="${#dates.format(photo.photoTime, 'yyyy-MM-dd HH:mm:ss')}"></span>
             </th:block>
           </div>
-          <th:block th:if="${photo.text}">
+          <th:block th:if="${photo.text} and not ${#strings.isEmpty(photo.text)}">
             <div class="card-body">
               <p class="card-text" th:text="${photo.text}"></p>
             </div>

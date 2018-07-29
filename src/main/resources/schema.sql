@@ -29,7 +29,7 @@ CREATE TABLE `photo` (
 ) ENGINE='InnoDB' DEFAULT CHARSET='utf8mb4';
 
 CREATE TABLE `config` (
-  `key` VARCHAR(256) NOT NULL,
-  `value` VARCHAR(4096) NOT NULL,
+  `key` VARCHAR(128) NOT NULL,
+  `value` TEXT NOT NULL,
   PRIMARY KEY (`key`)
 ) ENGINE='InnoDB' DEFAULT CHARSET='utf8mb4';

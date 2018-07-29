@@ -43,10 +43,12 @@ public class CheckSignedAspect {
         User user = (User) session.getAttribute("user");
         if (user == null) {
             String credential = null;
-            for (Cookie cookie : request.getCookies()) {
-                if ("credential".equals(cookie.getName())) {
-                    credential = cookie.getValue();
-                    break;
+            if (request.getCookies() != null) {
+                for (Cookie cookie : request.getCookies()) {
+                    if ("credential".equals(cookie.getName())) {
+                        credential = cookie.getValue();
+                        break;
+                    }
                 }
             }
             if (credential != null) {
