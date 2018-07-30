@@ -4,11 +4,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>me.ericfu</groupId>
-    <artifactId>miaowu-album</artifactId>
+    <artifactId>meow-album</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>miaowu-album</name>
+    <name>meow-album</name>
     <description>Yet another person album</description>
 
     <parent>
