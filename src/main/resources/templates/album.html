@@ -1,74 +1,75 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
 <head>
-  <meta charset="UTF-8">
-  <title th:text="'MiaoWu - ' + ${album.title}"></title>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-  <link rel="stylesheet" th:href="@{/css/default.css}">
+  <title th:text="${album.title}"></title>
 </head>
 <body>
-<div th:replace="fragments/navbar :: navbar(${user})"></div>
-<div class="container mt-3">
-  <th:block th:if="${user}">
-    <div class="row">
-      <div class="col">
-        <form method="post" enctype="multipart/form-data">
-          <div class="card mb-3">
-            <div class="card-header">
-              <input title="title" name="title" class="form-control" type="text" placeholder="Title">
-            </div>
-            <div class="card-body">
-              <textarea title="text" placeholder="Description" name="text" class="form-control mb-3" rows="3"></textarea>
-              <div class="input-group">
-                <div class="custom-file">
-                  <input type="file" class="custom-file-input" id="file-chooser" name="file">
-                  <label class="custom-file-label" for="file-chooser">Choose file...</label>
-                </div>
-                <div class="input-group-append">
-                  <!--<button class="btn btn-outline-secondary" type="button" id="inputGroupFileAddon04">Button</button>-->
-                  <button class="btn btn-primary" type="submit">Upload</button>
+<div layout:fragment="content">
+  <div class="container mt-3">
+    <th:block th:if="${user}">
+      <div class="row">
+        <div class="col">
+          <form method="post" enctype="multipart/form-data">
+            <div class="card mb-3">
+              <div class="card-header">
+                <input title="title" name="title" class="form-control" type="text" placeholder="Title">
+              </div>
+              <div class="card-body">
+                <textarea title="text" placeholder="Description" name="text" class="form-control mb-3"
+                          rows="3"></textarea>
+                <div class="input-group">
+                  <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="file-chooser" name="file">
+                    <label class="custom-file-label" for="file-chooser">Choose file...</label>
+                  </div>
+                  <div class="input-group-append">
+                    <button class="btn btn-primary" type="submit">Upload</button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </form>
-      </div>
-    </div>
-  </th:block>
-  <div class="row">
-    <th:block th:each="photo: ${photos}">
-      <div class="col col-12 col-lg-6">
-        <div class="card mb-3">
-          <img class="card-img-top" th:src="${photo.previewUrl}" th:alt="'Preview of ' + ${photo.title}">
-          <div class="card-header">
-            <th:block th:if="${photo.title}">
-              <span class="float-left" th:text="${photo.title}"></span>
-            </th:block>
-            <th:block th:if="${photo.photoTime}">
-              <span class="float-right text-muted" th:text="${#dates.format(photo.photoTime, 'yyyy-MM-dd HH:mm:ss')}"></span>
-            </th:block>
-          </div>
-          <th:block th:if="${photo.text} and not ${#strings.isEmpty(photo.text)}">
-            <div class="card-body">
-              <p class="card-text" th:text="${photo.text}"></p>
-            </div>
-          </th:block>
+          </form>
         </div>
       </div>
     </th:block>
+    <div class="row">
+      <th:block th:each="photo: ${photos}">
+        <div class="col col-12 col-lg-6">
+          <div class="card mb-3">
+            <img class="card-img-top" th:src="${photo.previewUrl}" th:alt="'Preview of ' + ${photo.title}">
+            <div class="card-header">
+              <th:block th:if="${photo.title}">
+                <span class="float-left" th:text="${photo.title}"></span>
+              </th:block>
+              <th:block th:if="${photo.photoTime}">
+                <span class="float-right text-muted"
+                      th:text="${#dates.format(photo.photoTime, 'yyyy-MM-dd HH:mm:ss')}"></span>
+              </th:block>
+            </div>
+            <th:block th:if="${photo.text} and not ${#strings.isEmpty(photo.text)}">
+              <div class="card-body">
+                <p class="card-text" th:text="${photo.text}"></p>
+              </div>
+            </th:block>
+          </div>
+        </div>
+      </th:block>
+    </div>
   </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-<script>
-    $('#file-chooser').on('change',function(){
-        //get the file name
-        var fileName = $(this).val();
-        //replace the "Choose a file" label
-        $(this).next('.custom-file-label').html(fileName);
-    })
-</script>
+<th:block layout:fragment="scripts">
+  <script>
+      $('#file-chooser').on('change', function () {
+          //get the file name
+          var fileName = $(this).val();
+          //replace the "Choose a file" label
+          $(this).next('.custom-file-label').html(fileName);
+      })
+  </script>
+</th:block>
 </body>
 </html>
