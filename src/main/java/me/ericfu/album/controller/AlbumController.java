@@ -20,6 +20,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpSession;
 import java.io.ByteArrayOutputStream;
@@ -40,23 +41,29 @@ public class AlbumController {
     }
 
     @GetMapping("/")
-    public String homepage(ModelMap modelMap) {
+    public ModelAndView homepage(HttpSession session) {
         List<Album> albums = albumService.getAllPublicAlbums();
-        modelMap.addAttribute("albums", albums);
-        return "home";
+
+        ModelAndView view = new ModelAndView("home");
+        view.addObject("albums", albums);
+        view.addObject("user", session.getAttribute("user"));
+        return view;
     }
 
     @GetMapping("/my")
     @MustSigned
-    public String myAlbums(ModelMap modelMap, HttpSession session) {
+    public ModelAndView myAlbums(HttpSession session) {
         User user = (User) session.getAttribute("user");
         List<Album> albums = albumService.getUserAlbums(user);
-        modelMap.addAttribute("albums", albums);
-        return "my_albums";
+
+        ModelAndView view = new ModelAndView("my_albums");
+        view.addObject("albums", albums);
+        view.addObject("user", session.getAttribute("user"));
+        return view;
     }
 
     @GetMapping("/album/{alias}")
-    public String showAlbumByAlias(@PathVariable("alias") String alias, HttpSession session, ModelMap modelMap) {
+    public ModelAndView showAlbumByAlias(@PathVariable("alias") String alias, HttpSession session) {
         Album album = albumService.getAlbumByAlias(alias);
         if (album == null) {
             throw new ResourceNotFoundException("requested album not found");
@@ -68,9 +75,12 @@ public class AlbumController {
             }
         }
         List<Photo> photos = albumService.getAlbumPhotos(album);
-        modelMap.addAttribute("album", album);
-        modelMap.addAttribute("photos", photos);
-        return "album";
+
+        ModelAndView view = new ModelAndView("album");
+        view.addObject("album", album);
+        view.addObject("photos", photos);
+        view.addObject("user", session.getAttribute("user"));
+        return view;
     }
 
     @PostMapping("/album/{alias}")
