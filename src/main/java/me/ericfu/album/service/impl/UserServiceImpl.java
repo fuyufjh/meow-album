@@ -2,17 +2,14 @@ package me.ericfu.album.service.impl;
 
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
-import me.ericfu.album.Config;
 import me.ericfu.album.dao.UserDao;
 import me.ericfu.album.model.User;
 import me.ericfu.album.service.ConfigService;
 import me.ericfu.album.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Base64Utils;
 
 import java.nio.charset.Charset;
-import java.security.SecureRandom;
 
 @Service
 public class UserServiceImpl implements UserService {

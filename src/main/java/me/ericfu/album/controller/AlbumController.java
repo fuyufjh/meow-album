@@ -1,6 +1,6 @@
 package me.ericfu.album.controller;
 
-import me.ericfu.album.aspect.MustSigned;
+import me.ericfu.album.aspect.CheckSignedAspect.CheckSigned;
 import me.ericfu.album.exception.AuthFailedException;
 import me.ericfu.album.exception.ResourceNotFoundException;
 import me.ericfu.album.model.Album;
@@ -51,7 +51,7 @@ public class AlbumController {
     }
 
     @GetMapping("/my")
-    @MustSigned
+    @CheckSigned
     public ModelAndView myAlbums(HttpSession session) {
         User user = (User) session.getAttribute("user");
         List<Album> albums = albumService.getUserAlbums(user);
@@ -84,7 +84,7 @@ public class AlbumController {
     }
 
     @PostMapping("/album/{alias}")
-    @MustSigned
+    @CheckSigned
     public String uploadPhoto(@PathVariable("alias") String alias,
                               @RequestParam("title") String title,
                               @RequestParam("text") String text,
@@ -119,8 +119,8 @@ public class AlbumController {
     @GetMapping("/files/{filename}")
     @ResponseBody
     public ResponseEntity<Resource> getPhoto(@PathVariable("filename") String filename,
-                           HttpSession session,
-                           ModelMap modelMap) throws IOException {
+                                             HttpSession session,
+                                             ModelMap modelMap) throws IOException {
         // FIXME: thumbnail should be generated when uploading, just hacking
         Resource file = storageService.loadAsResource(filename);
         ByteArrayOutputStream thumbnailStream = new ByteArrayOutputStream();

@@ -24,8 +24,7 @@ public class LocalStorageServiceImpl implements StorageService {
     static {
         try {
             Files.createDirectories(rootLocation);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new StorageException("Could not initialize storage", e);
         }
     }

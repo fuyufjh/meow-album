@@ -2,9 +2,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/layout}" th:with="page = 'my'">
+      layout:decorate="~{layout/layout}" th:with="page = 'about'">
 <head>
-  <title>My Album</title>
+  <title>About</title>
 </head>
 <body>
 <div layout:fragment="content">
@@ -12,11 +12,9 @@
     <div class="row">
       <div class="col">
         <div class="card mb-3">
-          <div class="card-header">My Albums</div>
+          <div class="card-header">Changelog</div>
           <div class="card-body">
-            <th:block th:each="album: ${albums}">
-              <a class="btn btn-outline-primary" th:text="${album.title}" th:href="${'/album/' + album.alias}"></a>
-            </th:block>
+            <div th:utext="${changelogHtml}"></div>
           </div>
         </div>
       </div>

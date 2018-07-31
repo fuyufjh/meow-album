@@ -13,27 +13,27 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+/**
+ * Set user to request attribute if presented in current session
+ */
 @Aspect
-@Order(10)
+@Order(100)
 @Component
-public class MustSignedAspect {
-
-    @Pointcut("@annotation(me.ericfu.album.aspect.MustSigned)")
-    public void isAnnotated() {
-    }
+public class SetUserInfoAspect {
 
     @Pointcut("execution(public * me.ericfu.album.controller..*(..))")
-    public void atExecution() {
+    public void isController() {
     }
 
-    @Before("isAnnotated() && atExecution()")
+    @Before("isController()")
     public void doBefore() throws AuthFailedException {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
-        if (user == null) {
-            throw new AuthFailedException("not signed in");
+        if (user != null) {
+            request.setAttribute("user", user); // for future use in template
         }
     }
+
 }

@@ -6,17 +6,27 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
 </head>
 <body>
-<div th:fragment="navbar(user)">
+<div th:fragment="navbar(user, page)">
   <nav class="navbar navbar-expand-md navbar-light bg-light">
     <a class="navbar-brand" href="/">MiaoWu Album</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
+        <li class="nav-item" th:classappend="${page} == 'home' ? 'active' : ''">
+          <a class="nav-link" href="/">Home</a>
+        </li>
+        <li class="nav-item" th:classappend="${page} == 'my' ? 'active' : ''">
+          <a class="nav-link" href="/my">My Albums</a>
+        </li>
+        <li class="nav-item" th:classappend="${page} == 'about' ? 'active' : ''">
+          <a class="nav-link" href="/about">About</a>
+        </li>
       </ul>
       <th:block th:if="${user}">
-        <span class="mr-2" th:text="'Signed as ' + ${user.username}"></span>
+        <span class="navbar-text mr-2" th:text="'Signed as ' + ${user.username}"></span>
         <a class="btn btn-primary my-2 my-sm-0" href="/logout">Sign Out</a>
       </th:block>
       <th:block th:unless="${user}">
