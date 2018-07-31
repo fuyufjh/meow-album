@@ -38,8 +38,10 @@ public class AlbumServiceImpl implements AlbumService {
     }
 
     @Override
-    public void addPhoto(Photo photo) {
-        photoDao.addPhoto(photo);
+    public Photo addPhoto(Photo photo) {
+        int photoId = photoDao.addPhoto(photo);
+        photo.setId(photoId);
+        return photo;
     }
 
     @Override

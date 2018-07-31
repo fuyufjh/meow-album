@@ -6,7 +6,6 @@ import me.ericfu.album.service.StorageService;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,19 +29,13 @@ public class LocalStorageServiceImpl implements StorageService {
     }
 
     @Override
-    public void store(MultipartFile file, String filename) {
+    public void store(InputStream inStream, String filename) {
         try {
-            if (file.isEmpty()) {
-                throw new StorageException("Failed to store empty file " + filename);
-            }
             if (filename.contains("..")) {
                 // This is a security check
                 throw new StorageException("Cannot store file with relative path outside current directory " + filename);
             }
-            try (InputStream inputStream = file.getInputStream()) {
-                Files.copy(inputStream, rootLocation.resolve(filename),
-                        StandardCopyOption.REPLACE_EXISTING);
-            }
+            Files.copy(inStream, rootLocation.resolve(filename), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             throw new StorageException("Failed to store file " + filename, e);
         }

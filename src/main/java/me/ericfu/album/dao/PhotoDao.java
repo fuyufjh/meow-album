@@ -3,6 +3,7 @@ package me.ericfu.album.dao;
 import me.ericfu.album.model.Photo;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
@@ -17,5 +18,6 @@ public interface PhotoDao {
     List<Photo> findPhotosByAlbumId(int albumId);
 
     @Insert("INSERT INTO photo (album_id, title, text, preview_url, raw_url, photo_time) VALUES (#{albumId}, #{title}, #{text}, #{previewUrl}, #{rawUrl}, #{photoTime})")
-    void addPhoto(Photo photo);
+    @Options(useGeneratedKeys = true)
+    int addPhoto(Photo photo);
 }

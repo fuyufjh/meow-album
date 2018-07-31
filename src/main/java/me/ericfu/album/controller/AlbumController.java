@@ -2,6 +2,7 @@ package me.ericfu.album.controller;
 
 import me.ericfu.album.aspect.CheckSignedAspect.CheckSigned;
 import me.ericfu.album.exception.AuthFailedException;
+import me.ericfu.album.exception.PhotoException;
 import me.ericfu.album.exception.ResourceNotFoundException;
 import me.ericfu.album.model.Album;
 import me.ericfu.album.model.Photo;
@@ -9,24 +10,20 @@ import me.ericfu.album.model.User;
 import me.ericfu.album.service.AlbumService;
 import me.ericfu.album.service.StorageService;
 import me.ericfu.album.util.PhotoUtils;
-import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpSession;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
-import java.util.UUID;
 
 @Controller
 public class AlbumController {
@@ -89,7 +86,7 @@ public class AlbumController {
                               @RequestParam("title") String title,
                               @RequestParam("text") String text,
                               @RequestParam("file") MultipartFile file,
-                              HttpSession session) {
+                              HttpSession session) throws IOException {
         User user = (User) session.getAttribute("user");
         Album album = albumService.getAlbumByAlias(alias);
         if (album == null) {
@@ -99,8 +96,23 @@ public class AlbumController {
             throw new AuthFailedException("no permission to this album");
         }
 
-        String filename = UUID.randomUUID().toString() + ".jpg";
-        storageService.store(file, filename);
+        if (file.isEmpty()) {
+            throw new PhotoException("empty file");
+        }
+
+        String extName = PhotoUtils.getFileExtName(file);
+        String hashCode = PhotoUtils.getHashCode(file);
+        String rawFilename = hashCode + extName;
+        String thumbnailFilename = hashCode + ".thumbnail" + extName;
+
+        try (InputStream inStream = file.getInputStream()) {
+            storageService.store(inStream, rawFilename);
+        }
+
+        try (InputStream rawStream = file.getInputStream();
+             InputStream inStream = PhotoUtils.getThumbnail(rawStream)) {
+            storageService.store(inStream, thumbnailFilename);
+        }
 
         Photo photo = new Photo();
         photo.setAlbumId(album.getId());
@@ -108,26 +120,21 @@ public class AlbumController {
         photo.setText(text);
         photo.setPhotoTime(PhotoUtils.extractDate(file));
 
-        String photoUrl = "/files/" + filename;
-        photo.setRawUrl(photoUrl);
-        photo.setPreviewUrl(photoUrl);
+        String rawPhotoUrl = "/upload/" + rawFilename;
+        photo.setRawUrl(rawPhotoUrl);
+        String thumbnailPhotoUrl = "/upload/" + thumbnailFilename;
+        photo.setPreviewUrl(thumbnailPhotoUrl);
         albumService.addPhoto(photo);
 
         return "redirect:/album/" + alias;
     }
 
-    @GetMapping("/files/{filename}")
+    @GetMapping("/upload/{filename}")
     @ResponseBody
-    public ResponseEntity<Resource> getPhoto(@PathVariable("filename") String filename,
-                                             HttpSession session,
-                                             ModelMap modelMap) throws IOException {
-        // FIXME: thumbnail should be generated when uploading, just hacking
+    public ResponseEntity<Resource> getPhoto(@PathVariable("filename") String filename) {
         Resource file = storageService.loadAsResource(filename);
-        ByteArrayOutputStream thumbnailStream = new ByteArrayOutputStream();
-        Thumbnails.of(file.getURL()).size(1024, 1024).toOutputStream(thumbnailStream);
-        ByteArrayResource resource = new ByteArrayResource(thumbnailStream.toByteArray());
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.IMAGE_JPEG_VALUE)
-                .body(resource);
+                .body(file);
     }
 }

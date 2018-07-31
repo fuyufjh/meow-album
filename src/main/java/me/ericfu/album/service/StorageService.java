@@ -1,11 +1,15 @@
 package me.ericfu.album.service;
 
 import org.springframework.core.io.Resource;
-import org.springframework.web.multipart.MultipartFile;
+
+import java.io.InputStream;
 
 public interface StorageService {
 
-    void store(MultipartFile file, String filename);
+    /**
+     * Store a InputStream into persistent storage. Caller is responsible for closing the stream.
+     */
+    void store(InputStream file, String filename);
 
     Resource loadAsResource(String filename);
 
