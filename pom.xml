@@ -80,6 +80,11 @@
             <artifactId>commonmark</artifactId>
             <version>0.11.0</version>
         </dependency>
+        <dependency>
+            <groupId>mediachest</groupId>
+            <artifactId>mediautil</artifactId>
+            <version>1.0</version>
+        </dependency>
 
         <!-- Test Dependencies -->
         <dependency>
@@ -98,4 +103,16 @@
         </plugins>
     </build>
 
+    <repositories>
+        <repository>
+            <id>local-maven-repository</id>
+            <url>file://${pom.basedir}/libs/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 </project>

@@ -105,8 +105,8 @@ public class AlbumController {
         String rawFilename = hashCode + extName;
         String thumbnailFilename = hashCode + ".thumbnail" + extName;
 
-        try (InputStream inStream = file.getInputStream()) {
-            storageService.store(inStream, rawFilename);
+        try (InputStream rotatedStream = PhotoUtils.getRotatedLossless(file, rawFilename)) {
+            storageService.store(rotatedStream, rawFilename);
         }
 
         try (InputStream rawStream = file.getInputStream();

@@ -4,16 +4,15 @@ import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.exif.ExifSubIFDDirectory;
+import me.ericfu.album.exception.PhotoException;
+import mediautil.image.jpeg.*;
 import net.coobird.thumbnailator.Thumbnails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -69,9 +68,69 @@ public class PhotoUtils {
     public static InputStream getThumbnail(InputStream inputStream) throws IOException {
         ByteArrayOutputStream thumbnailStream = new ByteArrayOutputStream();
         Thumbnails.of(inputStream)
-                .size(1024, 1024)
+                .size(768, 768)
                 .outputQuality(0.8)
                 .toOutputStream(thumbnailStream);
         return new ByteArrayInputStream(thumbnailStream.toByteArray());
+    }
+
+    /**
+     * Build a thumbnail for given InputStream. Caller is responsible for closing the input stream.
+     *
+     * @return OutputStream of thumbnail
+     */
+    @Deprecated
+    public static InputStream getRotated(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream thumbnailStream = new ByteArrayOutputStream();
+        Thumbnails.of(inputStream).scale(1.0).toOutputStream(thumbnailStream);
+        return new ByteArrayInputStream(thumbnailStream.toByteArray());
+    }
+
+    /**
+     * Build a thumbnail for given InputStream. Caller is responsible for closing the input stream.
+     *
+     * @return OutputStream of thumbnail
+     */
+    public static InputStream getRotatedLossless(MultipartFile file, String fileName) throws IOException {
+        try (InputStream inputStream = file.getInputStream()) {
+            // Read image EXIF data
+            LLJTran llj = new LLJTran(inputStream);
+            llj.read(LLJTran.READ_INFO, true);
+            AbstractImageInfo<?> imageInfo = llj.getImageInfo();
+            if (!(imageInfo instanceof Exif)) {
+                logger.info("Image '" + fileName + "' has no EXIF data (not a JPEG photo?)");
+                return file.getInputStream();
+            }
+
+            // Determine the orientation
+            Exif exif = (Exif) imageInfo;
+            int orientation = 1;
+            Entry orientationTag = exif.getTagValue(Exif.ORIENTATION, true);
+            if (orientationTag != null) {
+                orientation = (Integer) orientationTag.getValue(0);
+            }
+
+            // Determine required transform operation
+            int operation = 0;
+            if (orientation > 0 && orientation < Exif.opToCorrectOrientation.length)
+                operation = Exif.opToCorrectOrientation[orientation];
+            if (operation == 0) {
+                return file.getInputStream(); // The orientation is correct, do nothing
+            }
+
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            try {
+                // Transform image
+                llj.read(LLJTran.READ_ALL, true);
+                llj.transform(operation, LLJTran.OPT_DEFAULTS | LLJTran.OPT_XFORM_ORIENTATION);
+                llj.save(outputStream, LLJTran.OPT_WRITE_ALL);
+            } finally {
+                llj.freeMemory();
+            }
+            return new ByteArrayInputStream(outputStream.toByteArray());
+
+        } catch (LLJTranException ex) {
+            throw new PhotoException("LLJTran: " + ex.getMessage(), ex);
+        }
     }
 }
