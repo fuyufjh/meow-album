@@ -8,10 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 
 @Controller
@@ -25,13 +22,13 @@ public class AboutController {
 
     @GetMapping("/about")
     public ModelAndView about() {
-        URL url = getClass().getClassLoader().getResource(CHANGELOG_FILE);
-        if (url == null) {
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(CHANGELOG_FILE);
+        if (inputStream == null) {
             throw new ResourceNotFoundException(CHANGELOG_FILE + " not found");
         }
 
         String html;
-        try (FileReader reader = new FileReader(new File(url.getFile()))) {
+        try (InputStreamReader reader = new InputStreamReader(inputStream)) {
             Node node = markdownParser.parseReader(reader);
             html = htmlRenderer.render(node);
         } catch (FileNotFoundException e) {
