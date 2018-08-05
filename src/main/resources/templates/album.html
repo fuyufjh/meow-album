@@ -5,6 +5,14 @@
       layout:decorate="~{layout/layout}" th:with="page = 'album'">
 <head>
   <title th:text="${album.title}"></title>
+  <link rel="stylesheet" th:href="@{/css/lightgallery.min.css}">
+  <style>
+    .thumb {
+      object-fit: cover;
+      width: 180px;
+      height: 180px;
+    }
+  </style>
 </head>
 <body>
 <div layout:fragment="content">
@@ -36,27 +44,15 @@
       </div>
     </th:block>
     <div class="row">
-      <th:block th:each="photo: ${photos}">
-        <div class="col col-12 col-lg-6">
-          <div class="card mb-3">
-            <img class="card-img-top" th:src="${photo.previewUrl}" th:alt="'Preview of ' + ${photo.title}">
-            <div class="card-header">
-              <th:block th:if="${photo.title}">
-                <span class="float-left" th:text="${photo.title}"></span>
-              </th:block>
-              <th:block th:if="${photo.photoTime}">
-                <span class="float-right text-muted"
-                      th:text="${#dates.format(photo.photoTime, 'yyyy-MM-dd HH:mm:ss')}"></span>
-              </th:block>
-            </div>
-            <th:block th:if="${photo.text} and not ${#strings.isEmpty(photo.text)}">
-              <div class="card-body">
-                <p class="card-text" th:text="${photo.text}"></p>
-              </div>
-            </th:block>
-          </div>
+      <div class="col col-12">
+        <div id="gallery-thumbnails" class="text-center">
+          <th:block th:each="photo: ${photos}">
+            <a th:href="${photo.rawUrl}">
+              <img class="thumb mb-1" th:src="${photo.previewUrl}" />
+            </a>
+          </th:block>
         </div>
-      </th:block>
+      </div>
     </div>
   </div>
 </div>
@@ -64,11 +60,17 @@
 <th:block layout:fragment="scripts">
   <script>
       $('#file-chooser').on('change', function () {
-          //get the file name
           var fileName = $(this).val();
-          //replace the "Choose a file" label
+          fileName = fileName.substr(fileName.lastIndexOf('/') + 1);
           $(this).next('.custom-file-label').html(fileName);
       })
+  </script>
+  <script th:src="@{/js/lightgallery.min.js}"></script>
+  <script th:src="@{/js/lg-thumbnail.min.js}"></script>
+  <script>
+      lightGallery(document.getElementById('gallery-thumbnails'), {
+          thumbnail:true
+      });
   </script>
 </th:block>
 </body>
