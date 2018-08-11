@@ -85,7 +85,7 @@ public class AlbumController {
     public String uploadPhoto(@PathVariable("alias") String alias,
                               @RequestParam("title") String title,
                               @RequestParam("text") String text,
-                              @RequestParam("file") MultipartFile file,
+                              @RequestParam("files") MultipartFile[] files,
                               HttpSession session) throws IOException {
         User user = (User) session.getAttribute("user");
         Album album = albumService.getAlbumByAlias(alias);
@@ -96,35 +96,37 @@ public class AlbumController {
             throw new AuthFailedException("no permission to this album");
         }
 
-        if (file.isEmpty()) {
-            throw new PhotoException("empty file");
+        for (MultipartFile file : files) {
+            if (file.isEmpty()) {
+                throw new PhotoException("empty file");
+            }
+
+            String extName = PhotoUtils.getFileExtName(file);
+            String hashCode = PhotoUtils.getHashCode(file);
+            String rawFilename = hashCode + extName;
+            String thumbnailFilename = hashCode + ".thumbnail" + extName;
+
+            try (InputStream rotatedStream = PhotoUtils.getRotatedLossless(file, rawFilename)) {
+                storageService.store(rotatedStream, rawFilename);
+            }
+
+            try (InputStream rawStream = file.getInputStream();
+                 InputStream inStream = PhotoUtils.getThumbnail(rawStream)) {
+                storageService.store(inStream, thumbnailFilename);
+            }
+
+            Photo photo = new Photo();
+            photo.setAlbumId(album.getId());
+            photo.setTitle(title);
+            photo.setText(text);
+            photo.setPhotoTime(PhotoUtils.extractDate(file));
+
+            String rawPhotoUrl = "/upload/" + rawFilename;
+            photo.setRawUrl(rawPhotoUrl);
+            String thumbnailPhotoUrl = "/upload/" + thumbnailFilename;
+            photo.setPreviewUrl(thumbnailPhotoUrl);
+            albumService.addPhoto(photo);
         }
-
-        String extName = PhotoUtils.getFileExtName(file);
-        String hashCode = PhotoUtils.getHashCode(file);
-        String rawFilename = hashCode + extName;
-        String thumbnailFilename = hashCode + ".thumbnail" + extName;
-
-        try (InputStream rotatedStream = PhotoUtils.getRotatedLossless(file, rawFilename)) {
-            storageService.store(rotatedStream, rawFilename);
-        }
-
-        try (InputStream rawStream = file.getInputStream();
-             InputStream inStream = PhotoUtils.getThumbnail(rawStream)) {
-            storageService.store(inStream, thumbnailFilename);
-        }
-
-        Photo photo = new Photo();
-        photo.setAlbumId(album.getId());
-        photo.setTitle(title);
-        photo.setText(text);
-        photo.setPhotoTime(PhotoUtils.extractDate(file));
-
-        String rawPhotoUrl = "/upload/" + rawFilename;
-        photo.setRawUrl(rawPhotoUrl);
-        String thumbnailPhotoUrl = "/upload/" + thumbnailFilename;
-        photo.setPreviewUrl(thumbnailPhotoUrl);
-        albumService.addPhoto(photo);
 
         return "redirect:/album/" + alias;
     }
